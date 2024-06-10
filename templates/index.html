@@ -1,0 +1,84 @@
+<form action="/" method="get">
+    <select name="device_type">
+        <option value="switch">Коммутатор</option>
+        <option value="router">Маршрутизатор</option>
+        <option value="server">Сервер</option>
+        <option value="cable-organizer">Cable Organizer</option>
+        <option value="optical-cross">Optical cross</option>
+        <option value="patch-panel">Patch Panel</option>
+        <option value="san-switch">SAN Switch</option>
+        <option value="ups">UPS</option>
+        <option value="wireless-lan-controllers">Wireless LAN Controllers</option>
+        <option value="all">Все устройства</option>
+    </select>
+    <button type="submit">Выбрать устройство</button>
+</form>
+<form action="/reload/{{device_type}}">
+    <button>Обновить страницу</button>
+</form>
+
+<table style="font-size: 18px; margin-left: 30%;">
+    <caption style="color: blue; font-size: 25px; margin-bottom: 20px;">{{device_type}}</caption>
+    {% for key, value in stat.items() %}
+    {% if key != 'custom_fields'%}
+
+    {% set num = value | float %}
+    {% if num == 0.00 %}
+    {% set font_color = 'red' %}
+    {% set status='none' %}
+    {% elif num == 100.00 %}
+    {% set status='inline' %}
+    {% set font_color = 'green' %}
+    {% else %}
+    {% set font_color = 'black' %}
+    {% set status='none' %}
+    {% endif %}
+    <tr style="color: {{font_color}};">
+        <td>
+            {{key}}
+            <img src="../static/status.png" style="height: 15px; display: {{status}};">
+        </td>
+        {% set fill = value | float %}
+        {% if fill == 100.00 %}
+        {% set color = 'green'%}
+        {% else %}
+        {% set color = 'cadetblue'%}
+        {% endif %}
+        <td width="200" >
+            <div align="right" style="border-radius: 10px; padding-right: 20px; width: 200px;background: linear-gradient(to right, {{color}} {{fill}}%, white {{fill}}%);">
+                {{value}} %
+            </div>
+        </td>
+    </tr>
+    {% else %}
+    <tr>
+        <td colspan="2">{{key}}</td>
+    </tr>
+    {% for k1, v1 in value.items() %}
+
+    {% set num = v1 | float %}
+    {% if num == 0.00 %}
+    {% set font_color = 'red' %}
+    {% elif num == 100.00 %}
+    {% set font_color = 'green' %}
+    {% else %}
+    {% set font_color = 'black' %}
+    {% endif %}
+    <tr style="color: {{font_color}};">
+        <td>
+            -------{{k1}}
+        </td>
+        {% set fill = v1 | float %}
+        {% if fill == 100.00 %}
+        {% set color = 'green'%}
+        {% else %}
+        {% set color = 'cadetblue'%}
+        {% endif %}
+        <td width="200" align="right" style="border-radius: 10px;background: linear-gradient(to right, {{color}} {{fill}}%, white {{fill}}%);">
+            {{v1}} %
+        </td>
+    </tr>
+    {% endfor %}
+    {% endif %}
+    {% endfor %}
+</table>
